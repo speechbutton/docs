@@ -1,0 +1,10 @@
+# Basic SpeechButton config — just hold Right Command and speak.
+# Text appears where your cursor is.
+
+model = "parakeet-tdt-0.6b-v3-int8"
+language = "auto"
+auto_punctuation = true
+
+[[hotkey]]
+name = "default"
+key = "RightCommand"

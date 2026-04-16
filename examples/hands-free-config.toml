@@ -1,0 +1,21 @@
+# Hands-free config — SpeechButton listens continuously,
+# detects speech via VAD, and auto-sends after a pause.
+# Perfect for chat apps: just talk, text appears and Enter is pressed.
+
+model = "parakeet-tdt-0.6b-v3-int8"
+language = "en"
+
+auto_send = true
+send_delay_sec = 3.0
+auto_send_hotkey = "ctrl+enter"
+
+[vad]
+enabled = true
+chunk_silence_sec = 0.5
+
+[ptt]
+copy_to_clipboard = true
+
+[[hotkey]]
+name = "default"
+key = "RightCommand"

@@ -1,0 +1,62 @@
+# Power-user SpeechButton config with multiple channels.
+#
+# Hold Right Command to speak (default paste).
+# Hold + press 1 → translate to English.
+# Hold + press 2 → append to notes file.
+# Hold + press 3 → send to Slack webhook.
+# Hold + press 5 → send to Claude Code.
+# Short-tap Right Command → toggle hands-free mode.
+
+model = "parakeet-tdt-0.6b-v3-int8"
+language = "auto"
+auto_punctuation = true
+
+auto_send = false
+auto_send_hotkey = "ctrl+enter"
+send_delay_sec = 3.0
+
+[vad]
+enabled = false
+chunk_silence_sec = 0.55
+
+[ptt]
+chunking_enabled = true
+chunk_silence_sec = 1.0
+copy_to_clipboard = true
+
+[advanced]
+keep_audio_hot = false
+
+# Default channel — paste at cursor
+[[hotkey]]
+name = "default"
+key = "RightCommand"
+
+# Channel 1 — translate to English via Claude
+[[hotkey]]
+name = "translate"
+key = "RightCommand"
+channel = "1"
+transform = "~/.config/speechbutton/scripts/transform_claude.py ~/.config/speechbutton/prompts/translate_en.md"
+
+# Channel 2 — append to notes file
+[[hotkey]]
+name = "notes"
+key = "RightCommand"
+channel = "2"
+file = "~/Documents/voice-notes.txt"
+
+# Channel 3 — send to Slack
+[[hotkey]]
+name = "slack"
+key = "RightCommand"
+channel = "3"
+exec = "~/.config/speechbutton/scripts/send_slack.py"
+
+# Channel 5 — send to Claude Code
+[[hotkey]]
+name = "claude-code"
+key = "RightCommand"
+channel = "5"
+transform = "~/.config/speechbutton/scripts/transform_claude.py ~/.config/speechbutton/prompts/cleanup.md"
+exec = "claude -p --bare"
