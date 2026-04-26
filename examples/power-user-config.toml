@@ -13,6 +13,13 @@ auto_punctuation = true
 
 auto_send = false
 auto_send_hotkey = "ctrl+enter"
+
+# Voice Fingerprint (v2.12+) — transcribe only the enrolled user's voice.
+# Off by default. Uncomment to enable. First 5 recordings auto-enrol.
+# See docs/voice-fingerprint.md for the full guide.
+# [speaker_gate]
+# enabled = true
+# threshold = 0.55     # 0.20–0.95. Higher = stricter.
 send_delay_sec = 3.0
 
 [vad]

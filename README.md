@@ -1,6 +1,6 @@
 # SpeechButton Documentation
 
-Official documentation for [SpeechButton](https://speechbutton.app) — the fastest voice-to-text app for macOS.
+Official documentation for [SpeechButton](https://speechbutton.com) — the fastest voice-to-text app for macOS.
 
 ## Docs
 
@@ -9,7 +9,9 @@ Official documentation for [SpeechButton](https://speechbutton.app) — the fast
 - [Hotkeys & Channels](docs/hotkeys.md) — per-hotkey routing, channels, transforms
 - [Models](docs/models.md) — STT model comparison and selection
 - [Hands-Free Mode](docs/hands-free.md) — VAD, auto-send, clipboard
+- [Voice Fingerprint](docs/voice-fingerprint.md) — transcribe only your voice (v2.12+)
 - [Troubleshooting](docs/troubleshooting.md) — common issues and fixes
+- [Changelog](changelog.md) — release notes
 
 ## Integrations
 
@@ -26,8 +28,8 @@ Official documentation for [SpeechButton](https://speechbutton.app) — the fast
 
 ## Links
 
-- [Website](https://speechbutton.app)
+- [Website](https://speechbutton.com)
 - [Download](https://github.com/speechbutton/speechbutton-dist/releases/latest)
 - [Homebrew](https://github.com/speechbutton/homebrew-tap)
-- [Support](https://speechbutton.app/support.html)
-- [Privacy Policy](https://speechbutton.app/privacy.html)
+- [Support](https://speechbutton.com/support.html)
+- [Privacy Policy](https://speechbutton.com/privacy.html)

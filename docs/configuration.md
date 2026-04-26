@@ -158,6 +158,20 @@ match = "iPhone"                # Substring match (case-insensitive)
 keep_hot = true                 # Keep audio stream always running for this device
 ```
 
+## Voice Fingerprint
+
+Drop voice segments that don't match the enrolled user's voice — works for both push-to-talk and hands-free. PTT recordings are split by silence into utterances and each is checked independently, so a foreign voice in a pause is dropped while your speech goes through.
+
+```toml
+[speaker_gate]
+enabled = false                 # Master switch. Downloads ~25 MB WeSpeaker model on first enable.
+threshold = 0.55                # Cosine-similarity cutoff (0.20–0.95). Higher = stricter rejection.
+```
+
+The first 5 recordings auto-enrol the user's voice. Per-microphone profiles (AirPods, MacBook built-in, USB headsets) are stored separately and live at `~/Library/Application Support/SpeechButton/models/speaker_profiles.json` — plain 256-dim vectors, no audio retained, never sent to the cloud.
+
+See [Voice Fingerprint](voice-fingerprint.md) for the full guide, threshold tuning, and limits.
+
 ## Hallucination Filtering
 
 Per-model word lists in `~/.config/speechbutton/hallucinations/`:
