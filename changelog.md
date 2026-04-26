@@ -4,6 +4,15 @@ Release notes for SpeechButton. Most recent first. Full diffs are in the [GitHub
 
 ---
 
+## v2.12.1 — Voice Fingerprint hot-fix <a id="v2121"></a>
+
+> **2026-04-26 · Patch**
+
+- **Live enrollment counter.** The Settings panel now updates the *Profile: N/5 enrolling…* state immediately after each accepted recording, instead of staying on *Not enrolled yet* until the app was relaunched.
+- **Speaker gate auto-init at startup.** With Voice Fingerprint enabled, the gate is now active on app launch. Previously it only initialised when `config.toml` was edited externally.
+
+---
+
 ## v2.12.0 — Voice Fingerprint <a id="v2120"></a>
 
 > **2026-04-26 · Privacy & compatibility release**
