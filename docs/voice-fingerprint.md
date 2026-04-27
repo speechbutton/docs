@@ -38,7 +38,9 @@ Profile:   2/5 enrolling…
 Profile:   Enrolled (5 recordings)
 ```
 
-From the sixth recording onwards, the gate is active. Every accepted segment after that nudges the profile by **5 %** (exponential moving average), so it adapts to a head cold, a new microphone batch, or gradual changes in your voice — without one bad recording dragging the profile off course.
+From the sixth recording onwards, the gate is active. Each subsequent recording is scored against your stored templates. **High-confidence matches (cosine ≥ 0.70)** are added to a rolling buffer of up to **20 templates** per device — FIFO eviction once the buffer is full. **Border samples (cosine 0.55–0.70)** still pass through to transcription, but they do not enter the buffer, so a casual neighbour-pass can't gradually contaminate your profile.
+
+The buffer adapts to a head cold or a slightly different acoustic day naturally: as your real voice samples push out older ones, the rolling set always reflects the way you sound now.
 
 Want to start over? **Settings → Voice Fingerprint → Reset voice profile** wipes the file and begins fresh.
 
@@ -50,10 +52,18 @@ Want to start over? **Settings → Voice Fingerprint → Reset voice profile** w
 |------|--------------|
 | 1 | Speech segment arrives (≥1 s at 16 kHz mono) |
 | 2 | WeSpeaker ResNet-34 produces a 256-dim L2-normalised embedding (~5–10 ms on Apple Silicon) |
-| 3 | Cosine similarity is computed against the active per-device profile |
-| 4 | `≥ threshold` → accept + update profile · `< threshold` → drop, segment never reaches ASR |
+| 3 | Mean cosine similarity is computed against your stored templates (1 in fresh bootstrap, up to 20 once mature) |
+| 4 | The score is matched against two thresholds — see the decision matrix below |
 
-Same speaker on clean audio typically scores **0.65 – 0.85**. Different speakers land between **0.10 – 0.40**. The default threshold of **0.55** is conservative — it errs on the side of accepting the user.
+### Decision matrix
+
+| Mean similarity | Decision | Reaches ASR | Added to profile |
+|-----------------|----------|-------------|------------------|
+| `< 0.55` | reject | no | no |
+| `0.55 – 0.70` (border) | accept | **yes** | no |
+| `≥ 0.70` (high confidence) | accept | yes | yes (FIFO into ring) |
+
+Same speaker on clean audio typically scores **0.65 – 0.85**. Different speakers land between **0.10 – 0.40**. The default accept threshold of **0.55** is conservative — it errs on the side of accepting the user. The high-confidence cutoff of `0.70` is fixed in code and not user-tunable: lowering it would let border samples poison the profile, which is the failure mode this design is built to prevent.
 
 ---
 
@@ -90,7 +100,7 @@ Profiles are stored as plain JSON at:
 ~/Library/Application Support/SpeechButton/models/speaker_profiles.json
 ```
 
-The file is small — about **1 KB per device profile**. It contains only the averaged 256-dim embedding plus a counter. No raw audio is ever stored.
+The file is compact — up to **~20 KB per device profile** (20 templates × 256 floats × 4 bytes). It contains only the L2-normalised embedding vectors plus a counter. **No raw audio is ever stored.**
 
 Voice Fingerprint is **fully on-device**:
 
@@ -109,7 +119,7 @@ You can read, back up, or delete `speaker_profiles.json` at any time.
 Rarely, but yes. At the default 0.55 threshold a small percentage of foreign segments will pass — particularly close family members on the same microphone in the same room. Raise the threshold if this is an issue for your environment.
 
 **Will it ever reject me?**
-Sometimes, especially with a head cold, a brand-new microphone, or a noisy environment. The bootstrap (first 5 recordings) is permissive specifically so this doesn't lock new users out. After bootstrap, the EMA absorbs gradual changes; if your voice changes a lot suddenly, lower the threshold or reset the profile.
+Sometimes, especially with a head cold, a brand-new microphone, or a noisy environment. The bootstrap (first 5 recordings) is permissive specifically so this doesn't lock new users out. After bootstrap, the rolling buffer adapts as you record more — your most recent 20 high-confidence samples define the profile. If your voice changes a lot suddenly, lower the threshold or reset the profile.
 
 **Identical twins?**
 Voice Fingerprint will not reliably tell identical twins apart. This is a known limitation of speaker verification in general, not a SpeechButton-specific shortcoming.
@@ -125,6 +135,9 @@ A fresh per-device profile starts — five normal uses on the new device and you
 
 **Can I export or import my profile to another Mac?**
 Yes — copy `speaker_profiles.json` to the same path on the other Mac. Keep in mind the per-device keying: profiles only match if the macOS device name strings line up.
+
+**Upgrading from 2.12 — what happens to my old profile?**
+On first launch of 2.13, your existing profile is migrated automatically. If you had **40 or fewer** recordings on a given device, the old centroid becomes the first template in the new ring buffer; you'll keep recognition and fill the rest of the ring (up to 20) over the next few high-confidence recordings. If you had **more than 40** recordings on a device, the profile for that device is dropped — long-running 2.12 profiles drifted toward accepting other voices, and seeding the new buffer with a contaminated centroid would carry that drift forward. You'll re-bootstrap with five fresh recordings on that microphone, same as a brand-new install. Profiles on other devices are unaffected.
 
 ---
 

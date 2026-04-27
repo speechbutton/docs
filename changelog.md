@@ -4,6 +4,18 @@ Release notes for SpeechButton. Most recent first. Full diffs are in the [GitHub
 
 ---
 
+## v2.13.0 — Voice Fingerprint without drift <a id="v2130"></a>
+
+> **2026-04-27 · Internal architecture**
+
+- Replaced single-centroid + EMA profile with a multi-template ring buffer (up to 20 voice samples per device, FIFO eviction). Fixes a real failure mode where profiles trained over 150+ recordings began accepting other people's voices through gradual drift.
+- Border samples (low-confidence accepts) still pass to transcription but no longer enter the profile, so they cannot poison it.
+- **Migration:** profiles with more than 40 historical recordings on a given device auto-reset on first launch — re-bootstrap with 5 fresh recordings on that microphone. Smaller profiles keep their existing centroid as the first ring entry.
+
+The TOML schema (`[speaker_gate]`) and the user-visible Settings panel are unchanged. See [Voice Fingerprint](docs/voice-fingerprint.md) for the updated mechanics.
+
+---
+
 ## v2.12.1 — Voice Fingerprint hot-fix <a id="v2121"></a>
 
 > **2026-04-26 · Patch**
