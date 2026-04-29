@@ -4,6 +4,14 @@ Release notes for SpeechButton. Most recent first. Full diffs are in the [GitHub
 
 ---
 
+## v2.13.1 — Hands-free hallucination fix <a id="v2131"></a>
+
+> **2026-04-29 · Patch**
+
+- Pre-ASR silence gate prevents Whisper from receiving near-silent VAD chunks. Stops occasional "Thank you" / "Thanks for watching" hallucinations at the source.
+
+---
+
 ## v2.13.0 — Voice Fingerprint without drift <a id="v2130"></a>
 
 > **2026-04-27 · Internal architecture**
